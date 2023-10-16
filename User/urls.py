@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserCreateView, UserRetrieveUpdateDestroyView, UserLoginView, UserLogoutView, UserListView
+from .views import UserCreateView, UserRetrieveUpdateDestroyView, UserLoginView, UserLogoutView, UserListView, TokenRefreshView
 
 urlpatterns = [
     path('list/', UserListView.as_view(), name='user-list'),
@@ -7,4 +7,5 @@ urlpatterns = [
     path('own_info/<int:pk>/', UserRetrieveUpdateDestroyView.as_view(), name='user-retrieve-update-destroy'),
     path('login/', UserLoginView.as_view(), name='user-login'),
     path('logout/', UserLogoutView.as_view(), name='user-logout'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 ]

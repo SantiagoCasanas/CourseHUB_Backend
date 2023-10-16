@@ -39,7 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                                 max_length=200,
                                 validators=[validators.MinLengthValidator(8)])
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'full_name']
