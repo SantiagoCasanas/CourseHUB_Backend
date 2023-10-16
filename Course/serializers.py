@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Topic, Course, Chapter, User_take_Course
+from .models import Topic, Course, Chapter, UserTakeCourse
 
 
 class TopicSerializer(serializers.ModelSerializer):
@@ -26,11 +26,11 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class UserTakeCourseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User_take_Course
+        model = UserTakeCourse
         fields = ['id', 'user', 'course', 'number_of_chapter', 'calification']
 
     def create(self, validated_data):
-        return User_take_Course.objects.create(**validated_data)
+        return UserTakeCourse.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.calification = validated_data.get('calification', instance.calification)

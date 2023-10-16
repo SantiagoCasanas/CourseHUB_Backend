@@ -4,7 +4,7 @@ from .serializers import CourseSerializer, TopicSerializer, UserTakeCourseSerial
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
-from .models import Course, Topic, Chapter, User_take_Course
+from .models import Course, Topic, Chapter, UserTakeCourse
 
 
 class CustomListCreateCourseView(generics.ListCreateAPIView):
@@ -46,3 +46,17 @@ class User_take_Course(generics.CreateAPIView):
     queryset = Topic.objects.all()
     serializer_class = UserTakeCourseSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class UpdateUserTakeCourse(generics.UpdateAPIView):
+    queryset = UserTakeCourse.objects.all()
+    serializer_class = UserTakeCourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        user_id = self.request.data.get('user')
+        course_id = self.request.data.get('course')
+        course = Course.objects.get(pk=course_id)
+        course.set_calification()
+        course.save()
+        return self.queryset.get(user_id=user_id, course_id=course_id)
