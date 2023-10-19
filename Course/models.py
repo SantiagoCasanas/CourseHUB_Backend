@@ -15,7 +15,7 @@ class Course(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.PROTECT)
     tittle = models.CharField('Tittle', max_length=200, unique=True, null=False)
     description = models.CharField('Description', max_length=200, null=False)
-    calification = models.PositiveIntegerField(default=1, choices=[(i, i) for i in range(1, 6)])
+    calification = models.PositiveIntegerField(default=0, choices=[(i, i) for i in range(1, 6)])
     number_of_chapters =  models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -23,6 +23,7 @@ class Course(models.Model):
 
     def set_number_of_chapters(self):
         self.number_of_chapters = len(Chapter.objects.filter(course=self))
+        print(str(len(Chapter.objects.filter(course=self))))
         self.save()
     
     def set_calification(self):
@@ -38,14 +39,17 @@ class UserTakeCourse(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Reader')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Course')
     number_of_chapter = models.IntegerField(default=0)
-    calification = models.PositiveIntegerField(default=1, choices=[(i, i) for i in range(1, 6)])
+    calification = models.PositiveIntegerField(default=0, choices=[(i, i) for i in range(1, 6)])
 
 
 class Chapter(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Course')
-    tittle = models.CharField('Tittle', max_length=200, unique=True, null=False)
-    content = models.TextField('Content', null=False, max_length=3750)
+    tittle = models.CharField('Tittle', max_length=200, null=False)
+    content = models.TextField('Content', max_length=3750)
     number_of_chapter = models.PositiveIntegerField('Number of chapter', null=False)
 
     def __str__(self):
         return self.tittle
+    
+    class Meta:
+        unique_together = ['course', 'tittle']

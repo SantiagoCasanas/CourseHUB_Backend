@@ -44,7 +44,12 @@ class ChapterSerializer(serializers.ModelSerializer):
         fields = ['id', 'course', 'tittle', 'content', 'number_of_chapter']
 
     def create(self, validated_data):
-        return Chapter.objects.create(**validated_data)
+        istance = Chapter.objects.create(**validated_data)
+        course = Course.objects.get(id=validated_data.get('course').id)
+        course.set_number_of_chapters()
+        course.save()
+        return istance
+        
 
     def update(self, instance, validated_data):
         instance.tittle = validated_data.get('tittle', instance.tittle)

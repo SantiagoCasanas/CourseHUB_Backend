@@ -38,9 +38,10 @@ class ListTopic(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 class CreateChapter(generics.CreateAPIView):
-    queryset = Topic.objects.all()
+    queryset = Chapter.objects.all()
     serializer_class = ChapterSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class User_take_Course(generics.CreateAPIView):
     queryset = Topic.objects.all()

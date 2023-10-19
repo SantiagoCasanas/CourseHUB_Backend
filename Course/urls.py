@@ -7,5 +7,4 @@ urlpatterns = [
     path('create_chapter/', CreateChapter.as_view(), name='create_chapter'),
     path('user_take_course/', User_take_Course.as_view(), name='user_take_course'),
     path('rate_course/', UpdateUserTakeCourse.as_view(), name='update_user_take_course'),
-
 ]
