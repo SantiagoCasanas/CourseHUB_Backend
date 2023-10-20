@@ -32,7 +32,8 @@ class Course(models.Model):
         ratings = mean(ratings_list)
         self.calification = ratings
 
-
+    class Meta:
+        ordering = ['calification']
 
 
 class UserTakeCourse(models.Model):
@@ -46,7 +47,7 @@ class Chapter(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Course')
     tittle = models.CharField('Tittle', max_length=200, null=False)
     content = models.TextField('Content', max_length=3750)
-    number_of_chapter = models.PositiveIntegerField('Number of chapter', null=False)
+    number_of_chapter = models.PositiveIntegerField('Number of chapter', null=True)
 
     def __str__(self):
         return self.tittle

@@ -11,7 +11,7 @@ class TopicSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['id', 'author', 'topic', 'tittle', 'description', 'calification']
+        fields = ['id', 'author', 'topic', 'tittle', 'description', 'calification', 'number_of_chapters']
 
     def create(self, validated_data):
         return Course.objects.create(**validated_data)
@@ -44,11 +44,12 @@ class ChapterSerializer(serializers.ModelSerializer):
         fields = ['id', 'course', 'tittle', 'content', 'number_of_chapter']
 
     def create(self, validated_data):
-        istance = Chapter.objects.create(**validated_data)
         course = Course.objects.get(id=validated_data.get('course').id)
+        number_of_chapter = course.number_of_chapters + 1
+        instance = Chapter.objects.create(**validated_data, number_of_chapter=number_of_chapter)
         course.set_number_of_chapters()
         course.save()
-        return istance
+        return instance
         
 
     def update(self, instance, validated_data):
