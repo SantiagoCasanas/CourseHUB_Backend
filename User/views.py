@@ -2,9 +2,13 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
-from .serializers import UserSerializer, UserLoginSerializer, UserCreateSerializer
+from .serializers import (
+                        UserSerializer, UserLoginSerializer, 
+                        UserCreateSerializer, UserUpdateSerializer,
+                        )
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import authenticate
 
 
 class UserListView(generics.ListAPIView):
@@ -19,24 +23,55 @@ class UserCreateView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 
-class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class UserRetrieveView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self):
+        return self.request.user
+    
+class UserUpdateView(generics.UpdateAPIView):
+    serializer_class = UserUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+
+class DeactivateAccountView(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+
+        return Response({'detail': 'The account is now deactivate.'}, status=status.HTTP_200_OK)
+    
 
 class UserLoginView(APIView):
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = User.objects.get(username=serializer.validated_data['username'])
-        refresh = RefreshToken.for_user(user)
-        data = {
-            'id': str(user.id),
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
-        return Response(data, status=status.HTTP_200_OK)
+
+        user = authenticate(
+            username=serializer.validated_data['username'],
+            password=serializer.validated_data['password']
+        )
+
+        if user and user.is_active:
+            refresh = RefreshToken.for_user(user)
+            data = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserLogoutView(APIView):
