@@ -5,7 +5,7 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'full_name']
+        fields = ['username', 'email', 'full_name']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -25,7 +25,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'full_name']
+        fields = ['email', 'full_name', 'username']
+        extra_kwargs = {
+            'email': {'required': False},
+            'full_name': {'required': False},
+            'username': {'required': False},
+        }
 
 
 class UserLoginSerializer(serializers.Serializer):
