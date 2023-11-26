@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
 
     'User',
-    'Course'
+    'Course',
+    'ResetPassword'
 ]
 
 MIDDLEWARE = [

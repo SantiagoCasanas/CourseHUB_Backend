@@ -50,7 +50,7 @@ class DeactivateAccountView(generics.UpdateAPIView):
         user.is_active = False
         user.save()
 
-        return Response({'detail': 'The account is now deactivate.'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'The account is now deactivate.'}, status=status.HTTP_401_UNAUTHORIZED)
     
 
 class UserLoginView(APIView):
@@ -62,14 +62,16 @@ class UserLoginView(APIView):
             username=serializer.validated_data['username'],
             password=serializer.validated_data['password']
         )
-
         if user and user.is_active:
-            refresh = RefreshToken.for_user(user)
-            data = {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }
-            return Response(data, status=status.HTTP_200_OK)
+            if user.is_temporarily_inactive:
+                return Response({'detail': 'The user is temporarily inactive.'}, status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                refresh = RefreshToken.for_user(user)
+                data = {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                }
+                return Response(data, status=status.HTTP_200_OK)
         else:
             return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
