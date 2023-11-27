@@ -1,8 +1,17 @@
-from datetime import timezone
+from datetime import datetime
+import random
+from django.utils import timezone
 from django.db import models
-from ResetPassword.utils import generate_token
-
+from decouple import config
+import string
 from User.models import User
+
+def generate_token():
+    longitud = random.randint(4, 15)
+    caracteres = string.ascii_letters + string.digits
+    token = ''.join(random.choice(caracteres) for _ in range(longitud))
+    return token
+
 
 class ResetPasswordToken(models.Model):
     class Meta:
@@ -42,12 +51,12 @@ class ResetPasswordToken(models.Model):
         return super(ResetPasswordToken, self).save(*args, **kwargs)"""
     
     def get_or_create(user):
-        token = ResetPasswordToken.objects.filter(user=user)
+        token = ResetPasswordToken.objects.filter(user=user).first()
         if token is None:
             reset_passowrd_token = ResetPasswordToken.objects.create(
                 user=user,
                 expiration_date=timezone.now() + timezone.timedelta(minutes=15),
-                reset_token=generate_token(user.email)
+                reset_token=generate_token()
             )
             return reset_passowrd_token
         else:
@@ -59,7 +68,7 @@ class ResetPasswordToken(models.Model):
     def __str__(self):
         return "Password reset token for user {user}".format(user=self.user)
     
-    def increment_tries(self, max_tries=4):
+    def increment_tries(self, max_tries=3):
         if self.tries_counter >= max_tries:
             self.user.set_temporarily_inactive()
             self.delete()

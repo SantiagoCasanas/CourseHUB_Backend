@@ -1,27 +1,36 @@
-from sendgrid.helpers.mail import Mail
-import jwt
+
 from decouple import config
-from sendgrid import SendGridAPIClient
-from datetime import datetime
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 from .models import ResetPasswordToken
 
 def sendResetPasswordEmail(reset_password_token:ResetPasswordToken):
     forgot_password_token = str(reset_password_token.reset_token)
     user = reset_password_token.user
-    greetings = f"Hola {user.nombre} {user.apellido}," if user.nombre and user.apellido else "Hola"
-    email_html_content = f"<html><body><p>{greetings}</p>Por favor, usa este token para CineCritix App:<b> {forgot_password_token}</b></body></html>"
 
-    message = Mail(
-        from_email=config('EMAIL_SENDER'),
-        to_emails=[user.email],
-        subject=f"Recuperar contraseña de CineCritix App. {str(datetime.now())}",
-        html_content=email_html_content
-    )
+    greetings = f"Hi {user.username},"
+    subject = "Password Reset for COURSEHUB App"
+    email_content = f"""
+{greetings}
 
-    sendgrid_client = SendGridAPIClient(api_key=config('SEND_API'))
+We noticed that you requested a password reset for your COURSEHUB App account.
 
-    response = sendgrid_client.send(message)
+Please use the following token to reset your password: {forgot_password_token}
 
-def generate_token(email):
-    token = jwt.encode({"email":email}, config('SECRET_KEY'))
-    return token
+If you didn't request this, please ignore this email.
+
+Best regards,
+The COURSEHUB Team
+"""
+    
+    try:
+        email = EmailMessage(
+            subject=subject,
+            body=email_content,
+            from_email=config('EMAIL_HOST_USER', ''),
+            to=[user.email]
+        )
+        email.fail_silently = True
+        email.send()
+    except Exception as e:
+        return e

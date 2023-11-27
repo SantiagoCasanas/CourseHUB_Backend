@@ -4,8 +4,8 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import ResetPasswordToken
 from User.models import User
+from .models import ResetPasswordToken
 from .utils import sendResetPasswordEmail
 
 
@@ -25,12 +25,14 @@ class GetTokenResetPasswordView(APIView):
                         return Response({'detail': 'The user is temporarily inactive.'}, status=status.HTTP_401_UNAUTHORIZED)
                 else:
                     reset_password_token = ResetPasswordToken.get_or_create(user=user)
-                    #sendResetPasswordEmail(reset_password_token=reset_password_token)
-                    return Response({"detail": f"the token {reset_password_token.token} has been sent to {user.email}."}, status=status.HTTP_200_OK)
+                    email = sendResetPasswordEmail(reset_password_token=reset_password_token)
+                    
+                    return Response({"detail": "the tokenhas been sent."}, status=status.HTTP_200_OK)
             else:
                 return Response({'detail': 'The user is not active.'}, status=status.HTTP_401_UNAUTHORIZED)  
         except Exception as e:
-            return Response({'error': e}, status=status.HTTP_401_UNAUTHORIZED)
+         
+            return Response({'error': 'A problem occurred'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ResetPasswordView(APIView):
@@ -45,14 +47,14 @@ class ResetPasswordView(APIView):
                 return Response({"error": "The email is required."}, status=status.HTTP_400_BAD_REQUEST)
             try:    
                 user = User.objects.get(email=email)
-                reset_token = ResetPasswordToken.objects.get(token=token)
+                reset_token = ResetPasswordToken.objects.get(user=user)
             except Exception as e:
                 return Response({'error': 'the user does not exist or the token was not generated with this user'}, status=status.HTTP_401_UNAUTHORIZED)
             if user.is_active:
                 if user.is_temporarily_inactive:
                         return Response({'detail': 'The user is temporarily inactive.'}, status=status.HTTP_401_UNAUTHORIZED)
                 else:
-                    if token == reset_token.token:
+                    if token == reset_token.reset_token:
                         try:
                             validate_password(password)
                         except ValidationError as e:

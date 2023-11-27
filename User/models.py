@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import datetime, timedelta
 from django.db import models
 from django.core import validators
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -56,11 +56,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def set_temporarily_inactive(self, minutes=30):
         self.is_temporarily_inactive = True
-        self.inactive_timestamp = timezone.now() + timezone.timedelta(minutes=minutes)
+        self.inactive_timestamp = datetime.now() + timedelta(minutes=minutes)
         self.save()
 
     def is_temporaly_inactive(self):
-        if self.is_temporarily_inactive and self.inactive_timestamp > timezone.now():
+        if self.is_temporarily_inactive and self.inactive_timestamp > datetime.now():
             self.is_temporarily_inactive = False
             self.inactive_timestamp = None
             self.save()
