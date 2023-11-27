@@ -23,7 +23,6 @@ class Course(models.Model):
 
     def set_number_of_chapters(self):
         self.number_of_chapters = len(Chapter.objects.filter(course=self))
-        print(str(len(Chapter.objects.filter(course=self))))
         self.save()
     
     def set_calification(self):
