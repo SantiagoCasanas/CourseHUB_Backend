@@ -7,7 +7,7 @@ from .views import (
                     )
 
 urlpatterns = [
-    path('list', UserListView.as_view(), name='user-list'),
+    #path('list', UserListView.as_view(), name='user-list'),
     path('create', UserCreateView.as_view(), name='user-create'),
     path('own_info', UserRetrieveView.as_view(), name='user-detail'),
     path('update_own_info', UserUpdateView.as_view(), name='user-update'),
