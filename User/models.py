@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_temporarily_inactive = models.BooleanField(default=False)
     inactive_timestamp = models.DateTimeField(null=True, blank=True)
     is_staff = models.BooleanField(default=False)
+    profile_picture = models.ImageField(upload_to= 'images/', null= True, blank= True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'full_name']
@@ -53,7 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f'User: {self.username}'
-    
+
     def set_temporarily_inactive(self, minutes=30):
         self.is_temporarily_inactive = True
         self.inactive_timestamp = datetime.now() + timedelta(minutes=minutes)

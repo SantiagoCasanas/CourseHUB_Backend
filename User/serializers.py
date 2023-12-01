@@ -5,13 +5,13 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'full_name']
+        fields = ['username', 'email', 'full_name', 'profile_picture']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'full_name', 'password']
+        fields = ['username', 'email', 'full_name', 'password', 'profile_picture']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -25,11 +25,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'full_name', 'username']
+        fields = ['email', 'full_name', 'username', 'profile_picture']
         extra_kwargs = {
             'email': {'required': False},
             'full_name': {'required': False},
             'username': {'required': False},
+            'profile_picture' : {'required': False}
         }
 
 
