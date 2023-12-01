@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from .serializers import (
-                        UserSerializer, UserLoginSerializer, 
+                        UserSerializer, UserLoginSerializer,
                         UserCreateSerializer, UserUpdateSerializer,
                         )
 from rest_framework.views import APIView
@@ -14,7 +14,7 @@ from django.contrib.auth import authenticate
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
 
 class UserCreateView(generics.CreateAPIView):
@@ -30,7 +30,7 @@ class UserRetrieveView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
-    
+
 class UserUpdateView(generics.UpdateAPIView):
     serializer_class = UserUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -51,7 +51,7 @@ class DeactivateAccountView(generics.UpdateAPIView):
         user.save()
 
         return Response({'detail': 'The account is now deactivate.'}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
 
 class UserLoginView(APIView):
     def post(self, request):
@@ -82,7 +82,7 @@ class UserLogoutView(APIView):
     def post(self, request):
         refresh_token = request.data.get('refresh_token')
         RefreshToken(refresh_token).blacklist()
-        return Response(status=status.HTTP_205_RESET_CONTENT)
+        return Response({'detail':'successful logout'}, status=status.HTTP_205_RESET_CONTENT)
 
 class TokenRefreshView(APIView):
     def post(self, request):
