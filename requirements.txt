@@ -16,3 +16,4 @@ typing_extensions==4.8.0
 pytest
 python-decouple
 cryptography
+pillow
