@@ -60,3 +60,11 @@ class UpdateUserTakeCourse(generics.UpdateAPIView):
         course.set_calification()
         course.save()
         return self.queryset.get(user_id=user_id, course_id=course_id)
+
+class CoursesIHaveTaken(generics.ListAPIView):
+    serializer_class = UserTakeCourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return UserTakeCourse.objects.filter(user=user)
