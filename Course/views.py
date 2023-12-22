@@ -68,3 +68,11 @@ class CoursesIHaveTaken(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return UserTakeCourse.objects.filter(user=user)
+
+class CoursesCreatedByMe(generics.ListAPIView):
+    serializer_class = CourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Course.objects.filter(author=user)
