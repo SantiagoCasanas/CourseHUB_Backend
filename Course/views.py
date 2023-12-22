@@ -47,6 +47,9 @@ class User_take_Course(generics.CreateAPIView):
     serializer_class = UserTakeCourseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(user =self.request.user)
+
 
 class UpdateUserTakeCourse(generics.UpdateAPIView):
     queryset = UserTakeCourse.objects.all()
