@@ -20,9 +20,8 @@ class CustomListCreateCourseView(generics.ListCreateAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        return response
+    def perform_create(self, serializer):
+        serializer.save(author =self.request.user)
 
 class CreateTopic(generics.CreateAPIView):
     queryset = Topic.objects.all()
@@ -48,6 +47,9 @@ class User_take_Course(generics.CreateAPIView):
     serializer_class = UserTakeCourseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(user =self.request.user)
+
 
 class UpdateUserTakeCourse(generics.UpdateAPIView):
     queryset = UserTakeCourse.objects.all()
@@ -61,3 +63,19 @@ class UpdateUserTakeCourse(generics.UpdateAPIView):
         course.set_calification()
         course.save()
         return self.queryset.get(user_id=user_id, course_id=course_id)
+
+class CoursesIHaveTaken(generics.ListAPIView):
+    serializer_class = UserTakeCourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return UserTakeCourse.objects.filter(user=user)
+
+class CoursesCreatedByMe(generics.ListAPIView):
+    serializer_class = CourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Course.objects.filter(author=user)
