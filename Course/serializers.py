@@ -9,10 +9,10 @@ class TopicSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='author.username')
     class Meta:
         model = Course
         fields = ['id', 'author', 'topic', 'tittle', 'description', 'calification', 'number_of_chapters']
+        extra_kwargs = {'author': {'read_only': True}}
 
     def create(self, validated_data):
         return Course.objects.create(**validated_data)
@@ -29,6 +29,7 @@ class UserTakeCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserTakeCourse
         fields = ['id', 'user', 'course', 'number_of_chapter', 'calification']
+        extra_kwargs = {'user': {'read_only': True}}
 
     def create(self, validated_data):
         return UserTakeCourse.objects.create(**validated_data)
