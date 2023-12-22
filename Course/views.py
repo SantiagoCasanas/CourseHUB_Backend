@@ -20,9 +20,8 @@ class CustomListCreateCourseView(generics.ListCreateAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        return response
+    def perform_create(self, serializer):
+        serializer.save(author =self.request.user)
 
 class CreateTopic(generics.CreateAPIView):
     queryset = Topic.objects.all()
