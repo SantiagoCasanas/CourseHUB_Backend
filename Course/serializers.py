@@ -9,6 +9,7 @@ class TopicSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.username')
     class Meta:
         model = Course
         fields = ['id', 'author', 'topic', 'tittle', 'description', 'calification', 'number_of_chapters']
